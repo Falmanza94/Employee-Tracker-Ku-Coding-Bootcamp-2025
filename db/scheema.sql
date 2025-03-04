@@ -1,7 +1,6 @@
 DROP DATABASE IF EXISTS staff_db;
 CREATE DATABASE staff_db;
-
-\c staff_db;
+USE staff_db;
 
 CREATE TABLE department (
     id SERIAL PRIMARY KEY,
@@ -26,7 +25,7 @@ CREATE TABLE employee (
     manager_id INTEGER,
     FOREIGN KEY (role_id)
     REFERENCES role(id),
-    FOREIGN KEY (manager_id) --MAYBE KEEP MAYBE DELETE
+    FOREIGN KEY (manager_id)
     REFERENCES employee(id)
     ON DELETE SET NULL
 );

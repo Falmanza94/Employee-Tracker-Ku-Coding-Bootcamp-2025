@@ -1,15 +1,15 @@
 const inquirer = require('inquirer');
-const mysq1 = require('mysq12');
+const mysql = require('mysql2');
 
 require('dotenv').config();
 
 const dbUser = process.env.DB_USER;
-const dbPassword = process.env.DB_PASWORD;
+const dbPassword = process.env.DB_PASSWORD;
 const dbName = process.env.DB_NAME;
 
 async function dbConnection(select) {
     try {
-        const db = await mysq1.createConnection({
+        const db = await mysql.createConnection({
             host: 'localhost',
             user: dbUser,
             password: dbPassword,
@@ -21,7 +21,7 @@ async function dbConnection(select) {
 
         switch (select) {
             case 'View All Departments':
-                returnedRowsFromDb = await db.query('Select * From deparment');
+                returnedRowsFromDb = await db.query('Select * From department');
                 console.table(returnedRowsFromDb[0]);
                 break;
 
