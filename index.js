@@ -33,7 +33,33 @@ var employee_tracker = async function () {
                 console.table(result);
                 employee_tracker();
             });
-        }
+        } else if (answers.prompt === 'Add A Department') {
+            inquirer.prompt([{
+                type: 'input',
+                name: 'department',
+                message: 'What will the name be of the department?',
+                validate: departmentInput => {
+                    if (departmentInput) {
+                        return true;
+                    }else {
+                         console.log('{Add A Department.');
+                         return false;
+                    }
+                }
+            }]).then((answers) => {
+                db.query(`INSERT INTO department (name) VALUES (?)`, [answers.department], (err, result) => {
+                    if (err) throw err;
+                    console.log(`Added ${answers.department} to the database.`)
+                    employee_tracker();
+                });
+            });
+        } else if (answers.prompt === 'Add A Role') {
+            db.query(`SELECT * FROM department`, (err, result) => {
+                if (err) throw err;
+
+                inquirer.prompt([
+                    {
+                ])
 
 
 
