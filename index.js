@@ -1,7 +1,6 @@
 import inquirer from "inquirer";
 import { closeDb, connectionToDb } from "./connection.js";
 import { debugPort, title } from "process";
-import e from "express";
 
 
 var employee_tracker = async function () {
@@ -42,7 +41,7 @@ var employee_tracker = async function () {
                     if (departmentInput) {
                         return true;
                     }else {
-                         console.log('{Add A Department.');
+                         console.log('{Add A Department Please.');
                          return false;
                     }
                 }
@@ -59,7 +58,60 @@ var employee_tracker = async function () {
 
                 inquirer.prompt([
                     {
-                ])
+                        type: 'input',
+                        name: 'role',
+                        message: 'Please provide name of the role?',
+                        validate: roleInput => {
+                            if (roleInput) {
+                                return true;
+                            } else {
+                                console.log('Add A Role Please.');
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        type: 'input',
+                        name: 'salary',
+                        message: 'Please provide the salary of the role.',
+                        validate: salaryInput => {
+                            if (salaryInput) {
+                                return true;
+                            } else {
+                                console.log('Add A Salary Please.');
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        type: 'input',
+                        name: 'department',
+                        message: 'Which department does this role belong to?',
+                        choices: () => {
+                            var array = [];
+                            for (var i=0; i < result.length; i++) {
+                                array.push(result[i].name);
+                            }
+                            return array;
+                        }
+                    }
+                ]).then((answers) => {
+                    for (var i = 0; i <result.length; i++) {
+                        if (result[i].name === answers.department) {
+                            var department = result[i];
+                        }
+                   }
+                   db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [answers.role, answers.salary, department.id], (err, result) => {
+                        if (err) throw err;
+                        console.log(`Added ${answers.role} to the database.`)
+                        employee_tracker();
+                   });
+                })
+            });
+        } else if (answers.prompt === 'Add An Employee')
+        
+    });
+};
 
 
 
