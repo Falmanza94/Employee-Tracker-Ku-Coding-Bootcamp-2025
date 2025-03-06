@@ -15,7 +15,7 @@ const pool = new Pool (
     });
 
 //Function to display the prompts for the user
-const startApp = async () => {
+const startApp = async() => {
     const menuOptions = [
       {
         type: 'list',
@@ -61,40 +61,40 @@ switch (action) {
       console.log('Ending...');
       process.exit();
     }
-};
+  };
 
 //Function for viewing all departments:
-const viewDepartments = async () => {
+const viewDepartments = async() => {
     try {
         const res = await pool.query(`SELECT * FROM department`);
         console.table(res.rows);
     } catch (err) {
         console.error(`Error fetching departments:`, err);
     }
-};
+  };
 
 //Function for viewing all roles:
-const viewRoles = async () => {
+const viewRoles = async() => {
     try {
         const res = await pool.query(`SELECT * FROM role`);
         console.table(res.rows);
     } catch (err) {
         console.error(`Error fetching roles:`, err);
     }
-};
+  };
 
 //Function for viewing all employees:
-const viewEmployees = async () => {
+const viewEmployees = async() => {
     try {
         const res = await  pool.query(`SELECT e.id, e.first_name, e.last_name, r.title AS role, d.name AS deparment FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON r.department_id = d.id`);
         console.table(res.rows);
     } catch (err) {
         console.error(`Error fetching employees:`, err);
     }
-};
+  };
 
 //Function for adding a department:
-const addDepartment = async () => {
+const addDepartment = async() => {
     const { departmentName } = await inquirer.prompt ([
         {
             type: 'input',
@@ -109,11 +109,11 @@ const addDepartment = async () => {
     } catch (err) {
         console.error(`Error adding department:`, err);
     }
-};
+  };
 
 //Function for adding a role:
-const addRole = async () => {
-    const { title, salary, department_id } = await inquirer.prompt ([
+const addRole = async() => {
+    const { title, salary, department_id } = await inquirer.prompt([
         {
             type: 'input',
             name: 'title',
@@ -142,4 +142,73 @@ const addRole = async () => {
     } catch (err) {
         console.error('Error adding role:', err);
     }
-};
+  };
+
+//Function for adding an employee:
+const addEmployee = async() => {
+    const { first_name, last_name, role_id, manager_id } = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: 'Enter the first name of the employee:',
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: 'Enter the last name of the employee:',
+        },
+        {
+            type: 'input',
+            name: 'role_id',
+            message: 'Enter the role ID for the employee:',
+            validate: (input) => !isNaN(parseInt(input)) || 'Please enter a valid role ID.',
+        },
+        {
+            type: 'input',
+            name: 'manager_id',
+            message: 'Enter the manager ID for the employee (if applicable):',
+            default: '',
+        },
+    ]);
+
+    try {
+        const res = await pool.query(
+            `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4) RETURNING *`,
+            [first_name, last_name, parseInt(role_id), manager_id ? parseInt(manager_id): null]
+        );
+        console.log(`Added employee: ${res.rows[0].first_name} ${res.rows[0].last_name}`);
+    } catch (err) {
+        console.error(`Error adding employee:`, err);
+    }
+  };
+
+  //Function for updating an employee's role:
+const updateEmployeeRole = async() => {
+    const { employeeId, newRoleId } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'employeeId',
+        message: 'Enter the employee ID whose role you want to update:',
+      },
+      {
+        type: 'input',
+        name: 'newRoleId',
+        message: 'Enter the new role ID for the employee:',
+      },
+    ]);
+  
+    try {
+      const res = await pool.query(
+        'UPDATE employee SET role_id = $1 WHERE id = $2 RETURNING *',
+        [parseInt(newRoleId), parseInt(employeeId)]
+      );
+      if (res.rows.length > 0) {
+        console.log(`Updated employee role: ${res.rows[0].first_name} ${res.rows[0].last_name}`);
+      } else {
+        console.log('Employee not found.');
+      }
+    } catch (err) {
+      console.error('Error updating employee role:', err);
+    }
+  };
+  
