@@ -92,3 +92,21 @@ const viewEmployees = async () => {
         console.error(`Error fetching employees:`, err);
     }
 };
+
+//Function for adding a department
+const addDepartment = async () => {
+    const { departmentName } = await inquirer.prompt ([
+        {
+            type: 'input',
+            name: 'departmentName',
+            message: 'Enter the department name:',
+        },
+    ]);
+
+    try {
+        const res = await pool.query(`INSERT INTO department (name) VALUES ($1) RETURNING *`, [departmentName]);
+        console.log(`Added deparment: ${res.rows[0].name}`);
+    } catch (err) {
+        console.error(`Error adding department:`, err);
+    }
+};
