@@ -16,7 +16,7 @@ const pool = new Pool (
 
 //Function to display the prompts for the user
 const startApp = async() => {
-    const menuOptions = [
+    const { action } = await inquirer.prompt(
       {
         type: 'list',
         name: 'action',
@@ -30,10 +30,8 @@ const startApp = async() => {
             'Add an employee',
             'Update an employee role',
             'End Application']
-      }
-    ];
-
-const { action } = await inquirer.prompt(menuOptions);
+      
+    });
 
 switch (action) {
     case 'View all departments':
@@ -211,4 +209,7 @@ const updateEmployeeRole = async() => {
       console.error('Error updating employee role:', err);
     }
   };
+
+  //Start the application by calling this function:
+  startApp();
   
