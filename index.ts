@@ -1,10 +1,10 @@
 import inquirer from "inquirer";
-import { closeDb, connectionToDb } from "./connection.js";
+import { closeDb, connectToDb } from "./db/connection";
 import { debugPort, title } from "process";
 
 
 var employee_tracker = async function () {
-    const db = await connectionToDb();
+    const db = await connectToDb();
     inquirer.prompt ([{
         type: 'list',
         name: 'prompt',
@@ -171,7 +171,7 @@ var employee_tracker = async function () {
                         }
                     }
 
-                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id VALUES (?, ?, ?, ?)`, [answers.firstName, answers.lastName, role.id, answers.manager.id], (err, result) => {
+                    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [answers.firstName, answers.lastName, role.id, answers.manager.id], (err, result) => {
                         if (err) throw err;
                         console.log(`Added ${answers.firstName} ${answers.lastName} to the database.`)
                         employee_tracker();
@@ -189,7 +189,7 @@ var employee_tracker = async function () {
                         message: 'Which employees role would you like to change?',
                         choices: () => {
                             var array = [];
-                            for (var i = onabort; i < result.length; i++) {
+                            for (var i = 0; i < result.length; i++) {
                                 array.push(result[i].last_name);
                             }
                             var employeeArray = [...new Set(array)];
@@ -203,7 +203,7 @@ var employee_tracker = async function () {
                         choices: () => {
                             var array = [];
                             for (var i = 0; i < result.length; i++) {
-                                array,push(result[i].title);
+                                array.push(result[i].title);
                             }
                             var newArray = [...new Set (array)];
                             return newArray;
@@ -229,15 +229,12 @@ var employee_tracker = async function () {
                     })
                 })
             });
-        } else if
-                    
-                ])
-            }
+        } else if (answers.prompt === 'Log Out') {
+            db.end();
+            console.log('Bye-Bye!');
         }
-        
-    });
+    })
 };
-
 
 
 
