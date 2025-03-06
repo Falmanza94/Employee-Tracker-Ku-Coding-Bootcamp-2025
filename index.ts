@@ -93,7 +93,7 @@ const viewEmployees = async () => {
     }
 };
 
-//Function for adding a department
+//Function for adding a department:
 const addDepartment = async () => {
     const { departmentName } = await inquirer.prompt ([
         {
@@ -108,5 +108,38 @@ const addDepartment = async () => {
         console.log(`Added deparment: ${res.rows[0].name}`);
     } catch (err) {
         console.error(`Error adding department:`, err);
+    }
+};
+
+//Function for adding a role:
+const addRole = async () => {
+    const { title, salary, department_id } = await inquirer.prompt ([
+        {
+            type: 'input',
+            name: 'title',
+            message: 'Enter a role tile:',
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'Enter the salary for the role:',
+            validate: (input) => !isNaN(parseFloat(input)) || `Please enter a valid salary number.`,
+        },
+        {
+            type: 'input',
+            name: 'department_id',
+            message: 'Enter the department ID for this role:',
+            validate: (input) => !isNaN(parseInt(input)) || `Please enter a valid department ID.`,
+        },
+    ]);
+
+    try {
+        const res = await pool.query(
+            `INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3) RETURNING *`,
+            [title, parseFloat(salary), parseInt(department_id)]
+        );
+        console.log(`Added role: ${res.rows[0].title}`);
+    } catch (err) {
+        console.error('Error adding role:', err);
     }
 };
