@@ -79,6 +79,16 @@ const viewRoles = async () => {
         const res = await pool.query(`SELECT * FROM role`);
         console.table(res.rows);
     } catch (err) {
-        console.error(`Erro fetching roles:`, err);
+        console.error(`Error fetching roles:`, err);
+    }
+};
+
+//Function for viewing all employees:
+const viewEmployees = async () => {
+    try {
+        const res = await  pool.query(`SELECT e.id, e.first_name, e.last_name, r.title AS role, d.name AS deparment FROM employee e JOIN role r ON e.role_id = r.id JOIN department d ON r.department_id = d.id`);
+        console.table(res.rows);
+    } catch (err) {
+        console.error(`Error fetching employees:`, err);
     }
 };
