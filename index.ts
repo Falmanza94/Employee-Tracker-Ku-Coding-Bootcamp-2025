@@ -14,12 +14,6 @@ const pool = new Pool (
         database: process.env.DB_NAME
     });
 
-//Function to view departments
-const viewDepartments = async () => {
-    const res = await pool.query(`SELECT id, name FROM department`);
-    console.table(res.rows);
-};
-
 //Function to display the prompts for the user
 const startApp = async () => {
     const menuOptions = [
@@ -66,5 +60,15 @@ switch (action) {
     case 'End Application':
       console.log('Ending...');
       process.exit();
+    }
+};
+
+//Function for viewing all departments:
+const viewDepartments = async () => {
+    try {
+        const res = await pool.query(`SELECT * FROM department`);
+        console.table(res.rows);
+    } catch (err) {
+        console.error(`Error fetching departments:`, err);
     }
 };
