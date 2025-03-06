@@ -72,3 +72,13 @@ const viewDepartments = async () => {
         console.error(`Error fetching departments:`, err);
     }
 };
+
+//Function for viewing all roles:
+const viewRoles = async () => {
+    try {
+        const res = await pool.query(`SELECT * FROM role`);
+        console.table(res.rows);
+    } catch (err) {
+        console.error(`Erro fetching roles:`, err);
+    }
+};
